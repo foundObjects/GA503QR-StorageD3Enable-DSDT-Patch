@@ -18,7 +18,7 @@
  *     Compiler ID      "INTL"
  *     Compiler Version 0x20190509 (538510601)
  */
-DefinitionBlock ("", "DSDT", 2, "ALASKA", "A M I ", 0x01072009)
+DefinitionBlock ("", "DSDT", 2, "ALASKA", "A M I ", 0x0107200A)
 {
     External (_SB_.ALS_, DeviceObj)
     External (_SB_.ALS_.LUXL, UnknownObj)
@@ -12125,6 +12125,19 @@ DefinitionBlock ("", "DSDT", 2, "ALASKA", "A M I ", 0x01072009)
             {
                 TPST (0x7053)
             }
+
+            Name (_DSD, Package (0x02)  // _DSD: Device-Specific Data
+            {
+                ToUUID ("5025030f-842f-4ab4-a561-99a5189762d0") /* Unknown UUID */, 
+                Package (0x01)
+                {
+                    Package (0x02)
+                    {
+                        "StorageD3Enable", 
+                        One
+                    }
+                }
+            })
         }
 
         Scope (GPP6)
