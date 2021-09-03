@@ -24,25 +24,16 @@ for prog in iasl patch cpio; do
   exists $prog || fatal "$prog not found in path, aborting"
 done
 
-# cleanup build files
-cleanup() {
-  # validate that cleanup dir matches our pattern
-  if [[ -d "$1" ]] && [[ "$1" =~ ^/tmp/${temptoken} ]]; then
-    msg 'Removing temporary files'
-    rm -rf "$1"
-  fi
-}
-
-# create a working directory
+# create a working directory and clean it up on script exit
 # shellcheck disable=SC2064
-tempd="$(mktemp -dp '/tmp' ${temptoken}.XXXX)" && trap "cleanup $tempd" EXIT 
-
-msg "Processing DSDT"
+tempd="$(mktemp -dp '/tmp' ${temptoken}.XXXX)" &&
+  # validate that cleanup dir matches our pattern
+  trap '[[ -d "$tempd" ]] && [[ "$tempd" =~ ^/tmp/${temptoken} ]] && msg2 "Removing temporary files..." && rm -rf "$tempd"' EXIT
 
 # extract dsdt as root
 msg2 "Extracting DSDT as root"
 [[ "$EUID" -eq '0' ]] || sudo -v || fatal "This script requires root permissions to extract the DSDT."
-# shellcheck disable=SC2024/
+# shellcheck disable=SC2024
 sudo cat "/sys/firmware/acpi/tables/DSDT" > "$tempd/DSDT.dat"
 
 # decompile
@@ -50,15 +41,16 @@ msg2 "Decompiling"
 iasl -d "$tempd"/*.dat
 
 # patch
-msg2 "Patching DSDT, if this fails your BIOS may have a table newer than the included patch"
-patch -d "$tempd" -bNp1 -i "${datadir}/GA503QR-BIOS410-DSDT-Enable.patch"
+msg2 "Patching DSDT..."
+patch -d "$tempd" -bNp1 -i "${datadir}/GA503QR-BIOS410-DSDT-Enable.patch" ||
+  fatal "Patching failed! Your BIOS may be newer than the patch included in the repo or you may already have patched your DSDT."
 
 # compile
 msg2 "Compiling DSDT"
 iasl -ve -tc "${tempd}/DSDT.dsl"
 
 # construct our initramfs
-msg "Constructing initramfs image"
+msg2 "Creating initramfs image"
 mkdir -p "$tempd/kernel/firmware/acpi"
 cp "${tempd}/DSDT.aml" "${tempd}/kernel/firmware/acpi"
 cd "$tempd"
@@ -67,11 +59,11 @@ find kernel | cpio -H newc --create > "$outimage"
 msg2 "Finished; image: $outimage"
 
 while true; do
-  echo -n "Copy image to /boot? [N/y] : "
+  echo -n "Copy image to /boot? [y/N] : "
   read yn
   case "$yn" in
     [Yy]*)
-      msg "Installing image to /boot"
+      msg2 "Installing image to /boot"
       sudo install -v -o root -m 0655 --backup --suffix=".backup" "$outimage" "/boot/${imagename}"
       break
       ;;
