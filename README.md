@@ -1,5 +1,5 @@
 
-The 2021 ASUS ROG Zephyrus ships with a broken ACPI DSDT table that will prevent s0ix suspend/resume from completing
+The 2021 ASUS ROG Zephyrus G15 ships with a broken ACPI DSDT table that will prevent s0ix suspend/resume from completing
 successfully. This script will extract and patch your DSDT and repack it into an initramfs that you can include during
 boot.
 
