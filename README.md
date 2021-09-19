@@ -1,7 +1,7 @@
 
-The 2021 ASUS ROG Zephyrus G15 ships with a broken ACPI DSDT table that will prevent s0ix suspend/resume from completing
-successfully. This script will extract and patch your DSDT and repack it into an initramfs that you can include during
-boot.
+The 2021 ASUS ROG Zephyrus G15 (GA503Q models) ships with a broken ACPI DSDT table that will prevent s0ix suspend/resume
+from completing successfully. This script will extract and patch your DSDT and repack it into an initramfs that you can
+include during boot.
 
 ## Installing:
 
@@ -13,7 +13,7 @@ as shown on the Arch wiki like so:
 title Linux Mainline
 linux /vmlinuz-linux-mainline
 initrd /amd-ucode.img
-initrd /GA503QR-ACPI-Override.img
+initrd /GA503Q-ACPI-Override.img
 initrd /initramfs-linux-mainline.img
 ...
 ```
@@ -32,8 +32,9 @@ DSDT.
 
 
 Patch the NVM2 device as below (copy the stanza setting up StorageD3Enable from the functional NVME device just below
-it) and increment the DSDT revision by 1 (this value is in hexidecimal so go punch the original into a hex -> decimal
-calculator, add 1 and then convert back to hex) so the kernel will load it from the ramdisk we'll make later.
+it) and increment the DSDT revision in the header by 1 so the kernel will load it from the ramdisk we'll make later.
+The revision is a hexidecimal value so go punch the original into a hex -> decimal calculator, add 1 and then convert
+back to hex; this final hex value is your new revision.
 
 Your changes should look something like this:
 
@@ -87,10 +88,12 @@ and finally copy the ramdisk to /boot and add it to your kernel command line as 
 title Linux Mainline
 linux /vmlinuz-linux-mainline
 initrd /amd-ucode.img
-initrd /GA503QR-ACPI-Override.img
+initrd /GA503Q-ACPI-Override.img
 initrd /initramfs-linux-mainline.img
 ...
 ```
 
-If there are any problems along the way the Arch Wiki DSDT page should have you covered. Good luck!
+Note that the `amd-ucode.img` ramdisk *must be loaded first* before any other ramdisks otherwise boot will fail. If
+there are any problems along the way the Arch Wiki DSDT page should have you covered. Good luck!
 
+[//]: # ( vim: set tw=120: )
