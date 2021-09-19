@@ -2,7 +2,7 @@
 #
 # ASUS G15 2021 DSDT suspend patch
 # https://github.com/foundObjects/GA503QR-StorageD3Enable-DSDT-Patch
-# TODO: gitlab link here
+# https://gitlab.com/smbruce/GA503QR-StorageD3Enable-DSDT-Patch
 #
 # inspired by https://github.com/r0l1/razer_blade_14_2016_acpi_fix
 #
@@ -16,8 +16,8 @@ error() { echo "==> $(basename "$0") ln ${BASH_LINENO[0]} [ERROR]:" "$@" >&2; }
 fatal() { echo "==> $(basename "$0") ln ${BASH_LINENO[0]} [FATAL]:" "$@" >&2 && exit 1; }
 
 datadir="$(dirname "$(realpath "$0")")"
-temptoken="ga503qr-dsdt-patch"
-imagename="GA503QR-ACPI-Override.img"
+temptoken="ga503q-dsdt-patch"
+imagename="GA503Q-ACPI-Override.img"
 outimage="${datadir}/${imagename}"
 
 for prog in iasl patch cpio; do
@@ -42,7 +42,7 @@ iasl -d "$tempd"/*.dat
 
 # patch
 msg2 "Patching DSDT..."
-patch -d "$tempd" -bNp1 -i "${datadir}/GA503QR-BIOS410-DSDT-Enable.patch" ||
+patch -d "$tempd" -bNp1 -i "${datadir}/GA503Q-BIOS410-DSDT-Enable.patch" ||
   fatal "Patching failed! Your BIOS may be newer than the patch included in the repo or you may already have patched your DSDT."
 
 # compile
