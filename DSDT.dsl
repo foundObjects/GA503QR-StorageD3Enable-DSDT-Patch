@@ -1,17 +1,17 @@
 /*
  * Intel ACPI Component Architecture
- * AML/ASL+ Disassembler version 20210730 (64-bit version)
+ * AML/ASL+ Disassembler version 20210930 (64-bit version)
  * Copyright (c) 2000 - 2021 Intel Corporation
  * 
  * Disassembling to symbolic ASL+ operators
  *
- * Disassembly of DSDT.dat, Sun Aug 29 14:21:32 2021
+ * Disassembly of DSDT, Fri Oct 29 18:03:10 2021
  *
  * Original Table Header:
  *     Signature        "DSDT"
- *     Length           0x0000CF4D (53069)
+ *     Length           0x0000CFB8 (53176)
  *     Revision         0x02
- *     Checksum         0x8E
+ *     Checksum         0xA2
  *     OEM ID           "ALASKA"
  *     OEM Table ID     "A M I "
  *     OEM Revision     0x01072009 (17244169)
@@ -12224,6 +12224,65 @@ DefinitionBlock ("", "DSDT", 2, "ALASKA", "A M I ", 0x01072009)
     {
         If ((VIDS == 0x8086))
         {
+            Method (_DSM, 4, Serialized)  // _DSM: Device-Specific Method
+            {
+                If ((Arg0 == ToUUID ("f21202bf-8f78-4dc6-a5b3-1f738e285ade") /* Unknown UUID */))
+                {
+                    If ((Arg2 == Zero))
+                    {
+                        If ((Arg1 == Zero))
+                        {
+                            Return (Buffer (One)
+                            {
+                                 0x4F                                             // O
+                            })
+                        }
+                        Else
+                        {
+                            Return (Buffer (One)
+                            {
+                                 0x00                                             // .
+                            })
+                        }
+                    }
+
+                    If ((Arg2 == One))
+                    {
+                        Local0 = Zero
+                        Return (Local0)
+                    }
+
+                    If ((Arg2 == 0x02))
+                    {
+                        Local0 = Zero
+                        Return (Local0)
+                    }
+
+                    If ((Arg2 == 0x03))
+                    {
+                        Local0 = Zero
+                        Return (Local0)
+                    }
+
+                    If ((Arg2 == 0x06))
+                    {
+                        Return (Buffer (One)
+                        {
+                             0x0F                                             // .
+                        })
+                    }
+
+                    Return (Zero)
+                }
+                Else
+                {
+                    Return (Buffer (One)
+                    {
+                         0x00                                             // .
+                    })
+                }
+            }
+
             Name (WRDY, Package (0x03)
             {
                 Zero, 
